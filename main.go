@@ -1,24 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
+	// "fmt"
+	// "io/ioutil"
 	"log"
+	"microserices_go/handlers"
 	"net/http"
+	"os"
 )
 
 func main() {
-	// r for read
-	http.HandleFunc("/dio", func(rw http.ResponseWriter, r *http.Request) {
-		log.Println("the world")
-		data, err := ioutil.ReadAll(r.Body)
-		if err != nil{
-			http.Error(rw, "wwarryyy", http.StatusBadRequest)
-			// rw.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		fmt.Fprintf(rw, "data %s\n", data)
-	})
-	http.ListenAndServe(":9090", nil)
+	l := log.New(os.Stdout, "product-api", log.LstdFlags)
+	hh := handlers.NewHello(l)
+	gh := handlers.NewGoodbye(l)
+
+	sm := http.NewServeMux()
+	sm.Handle("/", hh)
+	sm.Handle("/goodbye", gh)
+	http.ListenAndServe(":9090", sm)
 
 }
