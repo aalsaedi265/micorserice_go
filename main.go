@@ -1,17 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-func main(){
+func main() {
 	// r for read
-	http.HandleFunc("/dio", func(http.ResponseWriter, r*http.Request){
+	http.HandleFunc("/dio", func(rw http.ResponseWriter, r *http.Request) {
 		log.Println("the world")
 		data, err := ioutil.ReadAll(r.Body)
-		log.Printf(data %s, data)
+		if err != nil{
+			http.Error(rw, "wwarryyy", http.StatusBadRequest)
+			// rw.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		fmt.Fprintf(rw, "data %s\n", data)
 	})
 	http.ListenAndServe(":9090", nil)
 
