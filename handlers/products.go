@@ -5,6 +5,8 @@ import (
 	"log"
 	"microserices_go/data"
 	"net/http"
+	"regexp"
+	"strconv"
 )
 
 type Products struct{
@@ -23,6 +25,34 @@ func(p*Products) ServeHTTP(rw http.ResponseWriter, r*http.Request){
 	if r.Method == http.MethodPost{
 		p.addProduct(rw, r)
 		return
+	}
+
+	if r.Method == http.MethodPut{
+		p.l.Println("PUT", r.URL.Path)
+
+		reg := regexp.MustCompile(`/([0-9]+)`)
+		g := reg.FindAllStringSubmatch(r.URL.Path, -1)
+
+		if len(g) !=1{
+			p.l.Println("invalid uri ", http.StatusBadRequest)
+			http.Error(rw, "Invalid URL", http.StatusBadRequest)
+			return
+		}
+
+		if len(g[0]) !=2 {
+			http.Error(rw, "Invalid URL", http.StatusBadRequest)
+			return
+		}
+		idString := g[0][1]
+		id, err := strconv.Atoi(idString)
+		if err != nil{
+			p.l.Println("Invalid URI unable to convert to number", idString)
+			http.Error(rw, "Invalid URL", http.StatusBadRequest)
+			return
+		}
+
+		p.l.Println("got id", id)
+		
 	}
 
 	rw.WriteHeader(http.StatusMethodNotAllowed)
@@ -44,5 +74,5 @@ func (p*Products) addProduct(rw http.ResponseWriter, r*http.Request){
 	if err != nil{
 		http.Error(rw, "unable to unmarshal json", http.StatusBadRequest)
 	}
-	p.l.Printf("Prod: %#v", prod)
+	data.AddProduct(prod)
 }
