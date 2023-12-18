@@ -5,8 +5,9 @@ import (
 	"log"
 	"microserices_go/data"
 	"net/http"
-	"regexp"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type Products struct{
@@ -17,47 +18,6 @@ func NewProducts(l*log.Logger)*Products{
 	return &Products{l}
 }
 
-func(p*Products) ServeHTTP(rw http.ResponseWriter, r*http.Request){
-	if r.Method == http.MethodGet{
-		p.GetProducts(rw, r)
-		return
-	}
-	if r.Method == http.MethodPost{
-		p.addProduct(rw, r)
-		return
-	}
-
-	if r.Method == http.MethodPut{
-		p.l.Println("PUT", r.URL.Path)
-		
-		reg := regexp.MustCompile(`/([0-9]+)`)
-		g := reg.FindAllStringSubmatch(r.URL.Path, -1)
-
-		if len(g) !=1{
-			p.l.Println("invalid uri ", http.StatusBadRequest)
-			http.Error(rw, "Invalid URL", http.StatusBadRequest)
-			return
-		}
-
-		if len(g[0]) !=2 {
-			http.Error(rw, "Invalid URL", http.StatusBadRequest)
-			return
-		}
-		idString := g[0][1]
-		id, err := strconv.Atoi(idString)
-		if err != nil{
-			p.l.Println("Invalid URI unable to convert to number", idString)
-			http.Error(rw, "Invalid URL", http.StatusBadRequest)
-			return
-		}
-
-		p.updateProducts(id, rw, r)
-	
-	}
-
-	rw.WriteHeader(http.StatusMethodNotAllowed)
-}
-
 func (p*Products) GetProducts(rw http.ResponseWriter, h*http.Request){
 	lp:= data.GetProducts()
 	err := lp.ToJSON(rw)
@@ -66,7 +26,7 @@ func (p*Products) GetProducts(rw http.ResponseWriter, h*http.Request){
 	}
 }
 
-func (p*Products) addProduct(rw http.ResponseWriter, r*http.Request){
+func (p*Products) AddProduct(rw http.ResponseWriter, r*http.Request){
 	p.l.Println("Handle Get Products")
 
 	prod := &data.Product{}
@@ -77,7 +37,10 @@ func (p*Products) addProduct(rw http.ResponseWriter, r*http.Request){
 	data.AddProduct(prod)
 }
 
-func (p Products) updateProducts(id int, rw http.ResponseWriter, r*http.Request) {
+func (p Products) UpdateProducts( rw http.ResponseWriter, r*http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
 	p.l.Println("Handle PUT Product")
 
 	prod := &data.Product{}
