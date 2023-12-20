@@ -1,5 +1,9 @@
 
-This Go Project is about writing abstraction
+This Go Project is about writing MICROSERVICES
 if it was linked to a database the code would be the same. 
 These various abstraction will do certain tasks very well and goal for the them
 to be be very reusable
+
+will use SWAGGER to automatically generate documentation for GO code
+will use GO PLAYGROUND VALIDATOR to make sure tests are working
+will use GORILLA to abstract GO code to make it more readable when making RESTful api
