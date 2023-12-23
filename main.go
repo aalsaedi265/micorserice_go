@@ -5,12 +5,15 @@ import (
 	// "io/ioutil"
 	"context"
 	"log"
+	"microserices_go/data"
 	"microserices_go/handlers"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
-	"microserices_go/data"
+
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/runtime/tree/master/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -39,6 +42,8 @@ func main() {
 	deleteR := sm.Methods(http.MethodDelete).Subrouter()
 	deleteR.HandleFunc("/products/{id:[0-9]+}", ph.Delete)
 
+	ops := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	sh := middleware.Redoc(ops, nil)
 	s := &http.Server{
 		Addr: ":9090",
 		Handler: sm,
