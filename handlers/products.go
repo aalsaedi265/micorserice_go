@@ -7,7 +7,7 @@ import (
 	"microserices_go/data"
 	"net/http"
 	"strconv"
-	"github.com/go-playground/validator"
+	// "github.com/go-playground/validator"
 	"github.com/gorilla/mux"
 )
 

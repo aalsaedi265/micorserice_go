@@ -1,9 +1,9 @@
-
 package handlers
 
 import (
-	"net/http"
+	"context"
 	"microserices_go/data"
+	"net/http"
 )
 
 func (p *Products) MiddlewareValidateProduct(next http.Handler) http.Handler {
