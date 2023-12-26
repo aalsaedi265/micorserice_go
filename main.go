@@ -11,9 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"time"
-
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/runtime/tree/master/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -44,6 +42,9 @@ func main() {
 
 	ops := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
 	sh := middleware.Redoc(ops, nil)
+
+	getR.Handle("/doc",sh)
+	getR.Handle("/swagger.yml", http.FileServer(http.Dir("./")))
 	s := &http.Server{
 		Addr: ":9090",
 		Handler: sm,

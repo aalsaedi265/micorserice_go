@@ -28,6 +28,17 @@ import (
 
 type KeyProduct struct{}
 
+type productResonposeWrapper struct{
+	Body []data.Product
+}
+
+type productNotContent struct{
+	
+}
+
+type productIDParameterWrapper struct{
+	ID int `json: "id"`
+}
 // Products handler for getting and updating products
 type Products struct {
 	l *log.Logger
