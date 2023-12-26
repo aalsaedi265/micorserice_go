@@ -1,52 +1,52 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table'
 import axios from 'axios';
 
 
-//typically would use componemnts and its the right thing, but since it only two files
-// using the old way won't make difference
 
+const CafeList = () => {
+    const [products, setProducts] = useState([]);
 
-class CafeList extends React.Component {
+    const readData = async () => {
+        try {
+            const response = await axios.get(`${window.api_location}/products`);
+            console.log(response.data);
+            setProducts(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-    getProduct() {
-        let table = []
-        
-        return table
-    }
-    constructor(props) {
-        super(props);
-        this.readData();
-        this.state = { products: [] };
-    
-        this.readData = this.readData.bind(this);
-    }
-    render() {
-        return (
-            <div>
-                <h1 style={{ marginBottom: "40px" }}>Menu</h1>
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Price
-                            </th>
-                            <th>
-                                SKU
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.getProducts()}
-                    </tbody>
-                </Table>
-            </div>
-        )
-    }
-}
+    useEffect(() => {
+        readData();
+    }, []);
 
-export default CafeList
+    const getProducts = () => products.map((product, index) => (
+        <tr key={index}>
+            <td>{product.name}</td>
+            <td>{product.price}</td>
+            <td>{product.sku}</td>
+        </tr>
+    ));
+
+    return (
+        <div>
+            <h1 style={{ marginBottom: "40px" }}>Menu</h1>
+            <Table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>SKU</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {getProducts()}
+                </tbody>
+            </Table>
+        </div>
+    );
+};
+
+export default CafeList;
